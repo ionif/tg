@@ -1,11 +1,12 @@
 package main;
 
 import (
+	"os"
         "bufio"
 	"fmt"
 	"flag"
-	"math/rand"
 	"log"
+	"strings"
 )
 
 type Turtle struct {
@@ -14,32 +15,38 @@ type Turtle struct {
 }
 
 var size = 20
-var filepath = flag.String("f", commands.txt, "filepath to commands file")
- 
+var filepath = flag.String("f", "commands.txt", "filepath to commands file")
+var end = false
 
 func NewTurtle() *Turtle {
 	t := new(Turtle)
 	t.x = size/2
 	t.y = size/2
-	pendown = true
+//	pendown := true
+	
+	return t
 }
 
-func moveTurtle(string dir) *Turtle {
-	switch d = strings.TrimRight(dir, "\n"); d {
+func(t *Turtle) moveTurtle(dir string) {
+	switch d := strings.TrimRight(dir, "\n"); d {
 	case "up":
 		t.y += 1
 	case "down":
 		t.y -= 1
 	case "right":
 		t.x += 1
-	case "left"
+	case "left":
 		t.x -= 1
-	
+	case "end":
+		end = true
+	default:
+		fmt.Println("No command")
+	}
 }
 
 func main() {
 	flag.Parse()
-	file, err := os.Open(filepath)
+	file, err := os.Open(*filepath)
 	if err != nil {
  		log.Fatal(err)
  	}
@@ -47,11 +54,16 @@ func main() {
  	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-
+	t := NewTurtle()
 	for scanner.Scan() {
 		fmt.Println(scanner.Text())
+		t.moveTurtle(scanner.Text())
+		fmt.Printf("%d, %d\n",t.x,t.y)
+		if end == true {
+			break
+		}
 	}
-
+	
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
