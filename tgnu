@@ -1,0 +1,8 @@
+set terminal svg 
+set output  "tg.svg"  
+set title "turtle graphics"
+set xlabel "x"
+set ylabel "y"
+set xrange [0:20]
+set yrange [0:20]
+plot "output.txt" using 1:2 with lines
