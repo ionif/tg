@@ -7,6 +7,7 @@ import (
 	"flag"
 	"log"
 	"strings"
+	"strconv"
 )
 
 type Turtle struct {
@@ -46,21 +47,30 @@ func(t *Turtle) moveTurtle(dir string) {
 
 func main() {
 	flag.Parse()
-	file, err := os.Open(*filepath)
+	txtIn, err := os.Open(*filepath)
 	if err != nil {
- 		log.Fatal(err)
+		log.Fatal(err)
+	}
+	defer txtIn.Close()
+	
+	txtOut, err := os.Create("output.txt")
+	if err != nil {
+ 		log.Fatal("Cannot create file", err)
  	}
+ 	defer txtOut.Close()
 
- 	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(txtIn)
 	t := NewTurtle()
 	for scanner.Scan() {
 		fmt.Println(scanner.Text())
 		t.moveTurtle(scanner.Text())
-		fmt.Printf("%d, %d\n",t.x,t.y)
 		if end == true {
 			break
+		}
+		
+		coords := []byte(strconv.Itoa(t.x) + " " + strconv.Itoa(t.y) + "\n")
+		if _, err := txtOut.Write(coords); err != nil {
+			panic(err)
 		}
 	}
 	
